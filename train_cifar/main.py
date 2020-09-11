@@ -1,5 +1,6 @@
 '''Train CIFAR10 with PyTorch.'''
 import tqdm
+import ipdb
 import torch
 import pickle
 import numpy as np
@@ -21,6 +22,7 @@ from resnet import ResNet18
 
 parser = argparse.ArgumentParser(description='PyTorch CIFAR10 Training')
 parser.add_argument('--lr', default=0.1, type=float, help='learning rate')
+parser.add_argument('--run', default=0, type=int, help='training runs')
 parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint')
 args = parser.parse_args()
 
@@ -29,8 +31,8 @@ best_acc = 0  # best test accuracy
 start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 end_epoch = 350
 snapshot_freq = 350
-train_batch_size = 50  # 128
-test_batch_size = 10  # 100
+train_batch_size = 50
+test_batch_size = 10
 
 # Data
 print('==> Preparing data..')
@@ -103,23 +105,6 @@ criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=args.lr, momentum=0.9, weight_decay=5e-4)
 scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones=[150, 250], gamma=0.1)  # int(0.5*end_epoch), int(0.75*end_epoch)], gamma=0.1)
 
-gradient_stats = dict()
-testing_gradient_stats = dict()
-training_evol_pred = dict()
-testing_evol_pred = dict()
-pred_train_label = []
-pred_test_label = []
-for mm in range(len(trainloader.dataset)):
-    if mm not in gradient_stats:
-        gradient_stats[mm] = []
-        training_evol_pred[mm] = []
-
-for mm in range(len(testloader.dataset)):
-    if mm not in testing_gradient_stats:
-        testing_gradient_stats[mm] = []
-        testing_evol_pred[mm] = []
-
-
 def get_lr(op):
     for param_group in op.param_groups:
         return param_group['lr']
@@ -132,22 +117,9 @@ def train(epoch):
     train_loss = 0
     correct = 0
     total = 0  
-    # ipdb.set_trace()
     for batch_idx, (inputs, targets) in enumerate(trainloader):
         net.train()
         train_inputs, train_targets = inputs.to(device), targets.to(device)
-        # torch.manual_seed(seed=0)
-        # train_targets[:10] = torch.randperm(10)
-        # if batch_idx*inputs.shape[0] < (0.2*trainloader.dataset.data.shape[0]):
-        #     torch.manual_seed(seed=0)
-            # ipdb.set_trace()
-        #     train_targets[:10] = torch.randperm(10)
-            # train_targets = train_targets[torch.randperm(inputs.shape[0])]
-            # print(train_targets)
-            # ipdb.set_trace()
-        #    os.system('mkdir -p ./scrambled_images/')
-
-        # ipdb.set_trace()
         optimizer.zero_grad()
         outputs = net(train_inputs)
         loss = criterion(outputs, train_targets)
@@ -158,45 +130,6 @@ def train(epoch):
         _, predicted = outputs.max(1)
         total += train_targets.size(0)
         correct += predicted.eq(train_targets).sum().item()
-
-        ## ==========================
-        #if (epoch % snapshot_freq == 0) or ((epoch+1) == end_epoch):
-        #    # Prob and gradients
-        #    net.eval()
-        #    sel_nodes_shape = train_targets.shape
-        #    ones = torch.ones(sel_nodes_shape).to(device)
-        #    train_inputs.requires_grad = True
-        #    logits = net(train_inputs)
-        #    probs = F.softmax(logits, dim=1).cpu()
-        #    sel_nodes = logits[torch.arange(len(train_targets)), train_targets]
-        #    sel_nodes.backward(ones)
-        #    grad = train_inputs.grad.cpu().numpy()  # [batch_size, 3, 32, 32]
-        #    grad = np.rollaxis(grad, 1, 4)  # [batch_size, 32, 32, 3]
-        #    grad = np.mean(grad, axis=-1)
-        #    for ii in range(grad.shape[0]):
-        #        gradient_stats[batch_idx*train_batch_size + ii].append(grad[ii, :])
-        #        training_evol_pred[batch_idx*train_batch_size + ii].append(predicted[ii].item())
-        #        if ((epoch+1) == end_epoch):
-        #            pred_train_label.append(predicted[ii].item())
-        #
-        #    # Testing
-        #    sel_nodes_shape = test_targets.shape
-        #    ones = torch.ones(sel_nodes_shape).to(device)
-        #    test_inputs.requires_grad = True
-        #    logits = net(test_inputs)
-        #    probs = F.softmax(logits, dim=1).cpu()
-        #    sel_nodes = logits[torch.arange(len(test_targets)), test_targets]
-        #    sel_nodes.backward(ones)
-        #    grad = test_inputs.grad.cpu().numpy()  # [batch_size, 3, 32, 32]
-        #    grad = np.rollaxis(grad, 1, 4)  # [batch_size, 32, 32, 3]
-        #    grad = np.mean(grad, axis=-1)
-        #    _, test_predicted = logits.max(1)
-        #    for ii in range(grad.shape[0]):
-        #        testing_gradient_stats[batch_idx*test_batch_size + ii].append(grad[ii, :])
-        #        testing_evol_pred[batch_idx*test_batch_size + ii].append(test_predicted[ii].item())
-        #        if ((epoch+1) == end_epoch):
-        #            pred_test_label.append(test_predicted[ii].item())
-        #
         scheduler.step()
 
     print('Finished Training')
@@ -205,9 +138,9 @@ def train(epoch):
         state = {
             'net': net.state_dict()
         }
-        if not os.path.isdir(f'checkpoint_cifar_{len(classes):03d}'):
-            os.mkdir(f'checkpoint_cifar_{len(classes):03d}')
-        torch.save(state, f'./checkpoint_cifar_{len(classes):03d}/ckpt_{epoch:03d}.pth')
+        if not os.path.isdir(f'checkpoint_cifar_{len(classes):03d}/run_{args.run:02d}'):
+            os.mkdir(f'checkpoint_cifar_{len(classes):03d}/run_{args.run:02d}')
+        torch.save(state, f'./checkpoint_cifar_{len(classes):03d}/run_{args.run:02d}/ckpt_{epoch:03d}.pth')
 
 
 def test(epoch):
@@ -226,27 +159,6 @@ def test(epoch):
             _, predicted = outputs.max(1)
             total += targets.size(0)
             correct += predicted.eq(targets).sum().item()
-
-            # ==========================
-            #if (epoch % snapshot_freq == 0) or ((epoch+1) == end_epoch):
-            #    # Prob and gradients
-            #    net.eval()    
-            #    sel_nodes_shape = targets.shape
-            #    ones = torch.ones(sel_nodes_shape).to(device)
-            #    inputs.requires_grad = True
-            #    logits = net(inputs)
-            #    probs = F.softmax(logits, dim=1).cpu()
-            #    sel_nodes = logits[torch.arange(len(targets)), targets]
-            #    sel_nodes.backward(ones)
-            #    grad = inputs.grad.cpu().numpy()  # [batch_size, 3, 32, 32]
-            #    grad = np.rollaxis(grad, 1, 4)  # [batch_size, 32, 32, 3]
-            #    grad = np.mean(grad, axis=-1)
-            #    for ii in range(grad.shape[0]):
-            #        testing_gradient_stats[batch_idx*batch_size + ii].append(grad[ii, :])
-            #        testing_evol_pred[batch_idx*batch_size + ii].append(predicted[ii].item())
-            #        if ((epoch+1) == end_epoch):
-            #            pred_test_label.append(predicted[ii].item())
-
             c = predicted.eq(targets).squeeze()
             for bb in range(targets.shape[0]):
                 label = targets[bb]
@@ -284,173 +196,3 @@ def test(epoch):
 for epoch in tqdm.tqdm(range(start_epoch, end_epoch)):
     train(epoch)
     class_correct, class_total = test(epoch)
-exit(0)
-
-
-# Understanding the gradients -- TRAINING
-# var_gradient_stats = dict.fromkeys(gradient_stats)
-var_gradient_stats = []
-stats_labels = []
-stats_images = []
-class_variances = list(0. for i in range(len(classes)))
-class_variances_stats = list(list() for i in range(len(classes)))
-for i, data in enumerate(trainloader, 0):
-    # get the inputs; data is a list of [inputs, labels]
-    inputs, labels = data[0].to(device), data[1].to(device)
-    for ii in range(inputs.shape[0]):
-        temp_grad = gradient_stats[i*train_batch_size + ii]
-        mean_grad = sum(temp_grad)/len(temp_grad)
-        var_gradient_stats.append(np.mean(np.sqrt(sum([(mm-mean_grad)**2 for mm in temp_grad])/len(temp_grad))))
-        stats_labels.append(labels[ii])
-        stats_images.append(
-            (inputs[ii].detach().cpu()*torch.tensor([0.2023, 0.1994, 0.2010]).view(3, 1, 1) +
-             torch.tensor([0.4914, 0.4822, 0.4465]).view(3, 1, 1)).permute(1, 2, 0).numpy())
-        # ipdb.set_trace()
-        class_variances[labels[ii]] += np.mean(np.sqrt(sum([(mm-mean_grad)**2 for mm in temp_grad])/len(temp_grad)))
-        class_variances_stats[labels[ii]].append(np.mean(np.sqrt(sum([(mm-mean_grad)**2 for mm in temp_grad])/len(temp_grad))))
-
-
-# Understanding the gradients -- TESTING
-testing_var_gradient_stats = []
-testing_stats_labels = []
-testing_stats_images = []
-testing_class_variances = list(0. for i in range(len(classes)))
-testing_class_variances_stats = list(list() for i in range(len(classes)))
-for i, data in enumerate(testloader, 0):
-    # get the inputs; data is a list of [inputs, labels]
-    inputs, labels = data[0].to(device), data[1].to(device)
-    for ii in range(inputs.shape[0]):
-        temp_grad = testing_gradient_stats[i*test_batch_size + ii]
-        mean_grad = sum(temp_grad)/len(temp_grad)
-        testing_var_gradient_stats.append(np.mean(np.sqrt(sum([(mm-mean_grad)**2 for mm in temp_grad])/len(temp_grad))))
-        testing_stats_labels.append(labels[ii])
-        testing_stats_images.append(
-            (inputs[ii].detach().cpu()*torch.tensor([0.2023, 0.1994, 0.2010]).view(3, 1, 1) +
-             torch.tensor([0.4914, 0.4822, 0.4465]).view(3, 1, 1)).permute(1, 2, 0).numpy())
-        # ipdb.set_trace()
-        testing_class_variances[labels[ii]] += np.mean(np.sqrt(sum([(mm-mean_grad)**2 for mm in temp_grad])/len(temp_grad)))
-        testing_class_variances_stats[labels[ii]].append(np.mean(np.sqrt(sum([(mm-mean_grad)**2 for mm in temp_grad])/len(temp_grad))))
-
-
-with open('class_correct.pkl','wb') as f: pickle.dump(class_correct, f)
-f.close()
-with open('class_total.pkl','wb') as f: pickle.dump(class_total, f)
-f.close()
-with open('pred_train_label.pkl','wb') as f: pickle.dump(pred_train_label, f)
-f.close()
-with open('pred_test_label.pkl','wb') as f: pickle.dump(pred_test_label, f)
-f.close()
-with open('var_gradient_stats.pkl','wb') as f: pickle.dump(var_gradient_stats, f)
-f.close()
-with open('stats_labels.pkl','wb') as f: pickle.dump(stats_labels, f)
-f.close()
-with open('stats_images.pkl','wb') as f: pickle.dump(stats_images, f)
-f.close()
-with open('class_variances.pkl','wb') as f: pickle.dump(class_variances, f)
-f.close()
-with open('class_variances_stats.pkl','wb') as f: pickle.dump(class_variances_stats, f)
-f.close()
-
-with open('testing_var_gradient_stats.pkl','wb') as f: pickle.dump(testing_var_gradient_stats, f)
-f.close()
-with open('testing_stats_labels.pkl','wb') as f: pickle.dump(testing_stats_labels, f)
-f.close()
-with open('testing_stats_images.pkl','wb') as f: pickle.dump(testing_stats_images, f)
-f.close()
-with open('testing_class_variances.pkl','wb') as f: pickle.dump(testing_class_variances, f)
-f.close()
-with open('testing_class_variances_stats.pkl','wb') as f: pickle.dump(testing_class_variances_stats, f)
-f.close()
-
-# Save file for dictionaries
-with open('gradient_stats.pkl', 'wb') as handle:
-    pickle.dump(gradient_stats, handle, protocol=pickle.HIGHEST_PROTOCOL)
-handle.close()
-
-with open('training_evol_pred.pkl', 'wb') as handle:
-    pickle.dump(training_evol_pred, handle, protocol=pickle.HIGHEST_PROTOCOL)
-handle.close()
-
-# Save file for dictionaries
-with open('testing_gradient_stats.pkl', 'wb') as handle:
-    pickle.dump(testing_gradient_stats, handle, protocol=pickle.HIGHEST_PROTOCOL)
-handle.close()
-
-with open('testing_evol_pred.pkl', 'wb') as handle:
-    pickle.dump(testing_evol_pred, handle, protocol=pickle.HIGHEST_PROTOCOL)
-handle.close()
-
-
-# with open('filename.pickle', 'rb') as handle:
-#     b = pickle.load(handle)
-
-## Customizing plotting
-#plt.rcParams['axes.linewidth'] = 0.0  # set the value globally
-#plt.rcParams.update({'font.size': 20})
-#plt.rc("font", family="sans-serif")
-#plt.rc("axes.spines", top=True, right=True, left=True, bottom=True)
-#
-## Ranking images according to their variance scores
-#sort_ind = np.argsort(var_gradient_stats)
-#f = plt.figure(figsize=(32, 32))
-## print('Images with maximum Variance across gradients')
-#for ind, mm in enumerate(sort_ind[::-1][:25]):
-#    ax = f.add_subplot(5, 5, ind+1)
-#    ax.imshow(stats_images[mm])
-#    ax.axis('off')
-#    ax.set_title(f'Var: {var_gradient_stats[mm]:.3f} | {classes[stats_labels[mm]]}')
-## f.show()
-#plt.savefig('./highest_var_dataset.jpg')
-#
-#f = plt.figure(figsize=(32, 32))
-## print('Images with minimum Variance across gradients')
-#for ind, mm in enumerate(sort_ind[:25]):
-#    ax = f.add_subplot(5, 5, ind+1)
-#    ax.imshow(stats_images[mm])
-#    ax.axis('off')
-#    ax.set_title(f'Var: {var_gradient_stats[mm]:.3f} | {classes[stats_labels[mm]]}')
-## f.show()
-#plt.savefig('./lowest_var_dataset.jpg')
-#
-## Inter-Class Analysis
-#plt.figure(figsize=(6, 6))
-#plt.grid('on')
-#for mm in range(len(classes)):
-#    plt.plot(100 * class_correct[mm]/class_total[mm],
-#           class_variances[mm]/class_total[mm], 'o',
-#           label=classes[mm])
-#    plt.xlabel('Class-wise Training Accuracy')
-#    plt.ylabel('Average class variances')
-#    plt.legend(fontsize='small')
-## plt.show()
-#plt.savefig('./inter_class_variance_acc.jpg')
-#
-## Intra-class analysis
-#sort_ind = np.argsort(var_gradient_stats)
-#for cl in range(len(classes)):
-#    count = 1
-#    f = plt.figure(figsize=(24, 24))
-#    for ind, mm in enumerate(sort_ind[::-1]):
-#        if count > 10:
-#            break
-#        if stats_labels[mm] == cl:
-#            ax = f.add_subplot(1, 10, count)
-#            ax.imshow(stats_images[mm])
-#            ax.axis('off')
-#            ax.set_title(f'{var_gradient_stats[mm]:.3f}')  # | {classes[stats_labels[mm]]}')
-#            count += 1
-#    # f.show()
-#    plt.savefig(f'./highest_var_class_{cl:02d}.jpg')
-#    count = 1
-#    f = plt.figure(figsize=(24, 24))
-#    for ind, mm in enumerate(sort_ind):
-#        if count > 10:
-#            break
-#        if stats_labels[mm] == cl:
-#            ax = f.add_subplot(1, 10, count)
-#            ax.imshow(stats_images[mm])
-#            ax.axis('off')
-#            ax.set_title(f'{var_gradient_stats[mm]:.3f}') #  | {classes[stats_labels[mm]]}')
-#            count += 1
-#    # f.show()
-#    plt.savefig(f'./lowest_var_class_{cl:02d}.jpg')
