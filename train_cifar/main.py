@@ -87,6 +87,10 @@ net = ResNet18()
 # net = ShuffleNetV2(1)
 # net = EfficientNetB0()
 net = net.to(device)
+
+# Create saving directory
+os.system(f'mkdir -p checkpoint_cifar_{len(classes):03d}')
+
 if device == 'cuda':
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
