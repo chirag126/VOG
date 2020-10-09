@@ -3,7 +3,6 @@
 #export LD_PRELOAD="/usr/lib/libtcmalloc.so"
 NAME=${1?Error: no snapshot given}
 checkpoint="./model.ckpt-"$NAME  # 32000"
-# echo $checkpoint
 save_path=${2}  # "./train_gradients/"
 test_dataset=${4}
 test_image_root="/home/chiragagarwall12/imagenet/train/"

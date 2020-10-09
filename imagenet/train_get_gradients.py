@@ -1,19 +1,18 @@
 #!/usr/bin/env python
 
 import os
-from skimage.io import imsave
-from datetime import datetime
-import time
-import tensorflow as tf
-tf.enable_eager_execution()
-import numpy as np
 import sys
+import time
 import select
 import saliency
-from IPython import embed
-
-import imagenet_input as data_input
+import numpy as np
 import resnet_model
+import tensorflow as tf
+tf.enable_eager_execution()
+from IPython import embed
+from skimage.io import imsave
+from datetime import datetime
+import imagenet_input as data_input
 os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 
 # Dataset Configuration
@@ -91,8 +90,6 @@ def train():
         with tf.device('/cpu:0'):
             print('\tLoading test data from %s' % FLAGS.test_dataset)
             with tf.variable_scope('test_image'):
-                # import ipdb
-                # ipdb.set_trace()
                 test_images, test_labels = data_input.inputs(FLAGS.test_image_root, FLAGS.test_dataset, FLAGS.batch_size, False, num_threads=1, center_crop=True)
 
         # Build a Graph that computes the predictions from the inference model.
@@ -112,10 +109,6 @@ def train():
             return network(inputs=images, is_training=False)
 
         logits = build_network()
-
-        # print('\tNumber of Weights: %d' % network._weights)
-        # print('\tFLOPs: %d' % network._flops)
-
         sess = tf.Session(
                 graph=g,
                 config=tf.ConfigProto(
@@ -154,10 +147,11 @@ def train():
         for i in range(FLAGS.test_iter):
             test_images_val, test_labels_val = sess.run([test_images[0], test_labels[0]])
             start_time = time.time()
-            if count == 7500:
-                break
+            
             # Evaluate metrics
-            if True:  # test_labels_val[0] == FLAGS.class_ind:
+            # Replace True with "test_labels_val[0] == FLAGS.class_ind" for analyzing the specified
+            # class_ind
+            if True:
                 predictions = np.argmax(logits.eval(session=sess, feed_dict={images: test_images_val}), axis=1)
                 ones = np.ones([FLAGS.batch_size])
                 zeros = np.zeros([FLAGS.batch_size])
@@ -171,11 +165,10 @@ def train():
                 pred_label.append(predictions[0])
 
                 # Get gradients
-                grad = gradient_saliency.GetMask(test_images_val[0, :], feed_dict = {neuron_selector: predictions[0]})  # test_labels_val[0]})
-                vanilla_mask_grayscale = saliency.VisualizeImageGrayscale(grad)
+                grad = gradient_saliency.GetMask(test_images_val[0, :], feed_dict = {neuron_selector: test_labels_val[0]})
                 
-                # imsave('./{}/weight_{:05d}/img_{:05d}.jpg'.format(FLAGS.save_path, path, i), (test_images_val[0, :]*imagenet_std + imagenet_mean))
-                np.save('./{}/weight_{:05d}/grad_{:05d}.npy'.format(FLAGS.save_path, path, i), np.mean(grad, axis=-1))  # vanilla_mask_grayscale)
+                imsave('./{}/weight_{:05d}/img_{:05d}.jpg'.format(FLAGS.save_path, path, i), (test_images_val[0, :]*imagenet_std + imagenet_mean))
+                np.save('./{}/weight_{:05d}/grad_{:05d}.npy'.format(FLAGS.save_path, path, i), np.mean(grad, axis=-1))
                 count+=1
                 
         test_acc /= FLAGS.test_iter
