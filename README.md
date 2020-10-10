@@ -46,9 +46,17 @@ The main scripts for the ImageNet experiments are in the `./imagenet/` folder.
 In this work, we hypothesize that examples that a model has difficulty learning will exhibit higher variance in gradient updates over the course of training. On the
 other hand, the gradient updates for the relatively easier examples are expected to stabilize early in training and converge to a narrow range of values.
 <p align="center">
-    <img src="imagenet/train_vog_sample.jpg" width=700px>
+    <img src="imagenet/train_vog_sample_003.jpg" width=300px>
 </p>
-<p align="left"><i>Left: The image sample is not learned by the model in the early stage resulting in a higher VOG score. Middle: At the end of the middle training stage, the model is able to classify the image correctly and hence the VOG score starts to decrease. Right: The example is easily learned by the model before the last training stage and therefore individual gradients stabilize resulting in a low VOG score.</i></p>
+<p align="center">
+    <img src="imagenet/train_vog_sample_006.jpg" width=300px>
+</p>
+<p align="left"><i>Left: In the early stage, the gradients fluctuate largely causing high variance among individual snapshot gradients. Middle: At the end of the middle training stage, the model is able to classify the image correctly and hence the VOG score starts to decrease. Right: The example is easily learned by the model before the last training stage and therefore individual gradients stabilize resulting in a low VOG score.</i></p>
+
+Also, a sample which is not learned by the model would result in high gradient variance even in the late training stage. The following figure shows the how the VOG score is always high across different training stages which means the gradients never stabilized.
+<p align="center">
+    <img src="imagenet/train_vog_sample_007.jpg" width=300px>
+</p>
 
 ## 4. Licenses
 Note that the code in this repository is licensed under MIT License, but, the pre-trained condition models used by the code have their own licenses. Please carefully check them before use. 
