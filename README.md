@@ -43,25 +43,12 @@ The main scripts for the ImageNet experiments are in the `./imagenet/` folder.
     <img src="imagenet/imagenet_error_plot_late.jpg" width=250px>
 </p>
 
-
-
-[LIME_test.sh](LIME_test.sh): 
-Generating the attribution map for the class "kuvasz" using LIME and LIME-G algorithm.
-* Running `source LIME_test.sh` produces this result:
-
+In this work, we hypothesize that examples that a model has difficulty learning will exhibit higher variance in gradient updates over the course of training. On the
+other hand, the gradient updates for the relatively easier examples are expected to stabilize early in training and converge to a narrow range of values.
 <p align="center">
-    <img src="output/test_LIME.jpg" width=750px>
+    <img src="imagenet/train_vog_sample.jpg" width=700px>
 </p>
-<p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultant attribution map for LIME (top) and LIME-G (bottom). For each intermediate perturbed image, the top and bottom row labels shows the target and top-1 class predictions with their respective probabilities.</i></p>
-
-[MP_test.sh](MP_test.sh): 
-Generating the attribution map for the class "freight car" using MP and MP-G algorithm.
-* Running `source MP_test.sh` produces this result:
-
-<p align="center">
-    <img src="output/test_MP.jpg" width=750px> 
-</p>
-<p align="center"><i>(left-->right) The real image followed by five random intermediate perturbed images and the resultant attribution map for MP (top) and MP-G (bottom). For each intermediate perturbed image, the top and bottom row labels shows the target and top-1 class predictions with their respective probabilities.</i></p>
+<p align="left"><i>Left: The image sample is not learned by the model in the early stage resulting in a higher VOG score. Middle: At the end of the middle training stage, the model is able to classify the image correctly and hence the VOG score starts to decrease. Right: The example is easily learned by the model before the last training stage and therefore individual gradients stabilize resulting in a low VOG score.</i></p>
 
 ## 4. Licenses
 Note that the code in this repository is licensed under MIT License, but, the pre-trained condition models used by the code have their own licenses. Please carefully check them before use. 
