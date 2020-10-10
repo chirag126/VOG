@@ -27,7 +27,7 @@ def calculate_top_10_percentile_error(x, pr):
     plt.xlabel('VOG percentile range')
     plt.xticks(np.arange(0, 101, 10))
     plt.yticks(np.arange(0, 101, 10))
-    plt.savefig('imagenet_error_plot_{}.pdf'.format(snapshot), bbox_inches='tight')
+    plt.savefig('imagenet_error_plot_{}.jpg'.format(snapshot), bbox_inches='tight')
 
 
 def plot_grid(score_x, vog, dataset_classes, x_gt, x_pr, label_type):
