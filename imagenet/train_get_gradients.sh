@@ -3,8 +3,9 @@
 #export LD_PRELOAD="/usr/lib/libtcmalloc.so"
 NAME=${1?Error: no snapshot given}
 checkpoint="./model.ckpt-"$NAME  # 32000"
-save_path=${2}  # "./train_gradients/"
+save_path=${2}  # "./train_results/"
 test_dataset=${4}
+# Path to imagenet train dataset
 test_image_root="/home/chiragagarwall12/imagenet/train/"
 output_file="./eval-0.pkl"
 class_ind=${3}
