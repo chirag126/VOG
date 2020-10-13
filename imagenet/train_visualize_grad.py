@@ -26,7 +26,6 @@ def calculate_top_10_percentile_error(x, pr):
     plt.ylabel('% top-1 test set error')
     plt.xlabel('VOG percentile range')
     plt.xticks(np.arange(0, 101, 10))
-    plt.yticks(np.arange(0, 101, 10))
     plt.savefig('imagenet_error_plot_{}.jpg'.format(snapshot), bbox_inches='tight')
 
 
@@ -34,7 +33,7 @@ def plot_grid(score_x, vog, dataset_classes, x_gt, x_pr, label_type):
     count = 0
     for ind in score_x:
         img_str = '-label "{:.4f}\nGT: {}\nPT: {}" ./{}/weight_32000/img_{:05d}.jpg '.format(vog[ind], dataset_classes[x_gt[ind]][1][2:-1].split(',')[0], dataset_classes[x_pr[ind]][1][2:-1].split(',')[0], load_path, ind)
-        os.system('montage -quiet {} -tile 1x -geometry +0+0 -pointsize 33 ./{:03d}_{}.jpg'.format(img_str, ind, label_type))
+        os.system('montage -quiet {} -tile 1x -geometry +0+0 -pointsize 33 ./{:03d}_{}.jpg'.format(img_str, count, label_type))
         count += 1
 
 
@@ -43,17 +42,10 @@ file_ind = sorted([int(f.split('.')[0].split('_')[-1]) for f in os.listdir('./{}
 ground_truth = np.load('./{}/weight_32000/ground_truth.npy'.format(load_path))
 
 # List of weight files
-snapshot_list = ['early', 'middle', 'late']  # , 'complete']
+snapshot_list = ['late']
 for snapshot in snapshot_list:
-    if snapshot == 'early':
-        weight_files = sorted(os.listdir('./{}/'.format(load_path)))[:3]
-    elif snapshot == 'middle':
-        weight_files = sorted(os.listdir('./{}/'.format(load_path)))[3:6]
-    elif snapshot == 'late':
-        weight_files = sorted(os.listdir('./{}/'.format(load_path)))[6:]
-    elif snapshot == 'complete':
-        weight_files = sorted(os.listdir('./{}/'.format(load_path)))
 
+    weight_files = sorted(os.listdir('./{}/'.format(load_path)))
     print('=== Analyzing Stage: {} ==='.format(snapshot))
     print(weight_files)
 
@@ -77,7 +69,7 @@ for snapshot in snapshot_list:
         vog_class_stats[ground_truth[ind]].append(vog)
     print('VOG calculation done!!')
 
-    ## For this demo script we only have 10 images from different labels. Hence, we comment out the noramluza    ## tion code
+    ## For this demo script we only have 100 images from different labels. Hence, we comment out the noramlization code
     ## Normalized VOG score
     #print('=== Normalizing the VOG scores using class-wise statistics ===')
     #normalized_vog=[]
