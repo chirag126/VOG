@@ -37,7 +37,7 @@ The main scripts for the ImageNet experiments are in the `./imagenet/` folder.
     
 `source train_get_gradients.sh 32000 ./imagenet/train_results/ 9 ./scripts/train.txt/`
 
-2. For this repo, we have generated the gradients for 10 images at 9 different snapshots and are stored in `./imagenet/train_results/`. To generate the error rate performance at different VOG deciles run [train_visualize_grad.py](train_visualize_grad.py) using the following command.
+2. For this repo, we have generated the gradients for 100 random images for the late stage training process and stored the results in `./imagenet/train_results/`. To generate the error rate performance at different VOG deciles run [train_visualize_grad.py](train_visualize_grad.py) using the following command.
 `python train_visualize_grad.py`
 
 <p align="center">
