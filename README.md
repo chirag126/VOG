@@ -47,6 +47,8 @@ The main scripts for the ImageNet experiments are in the `./imagenet/` folder.
 On analyzing the VOG score for a particular class (e.g. below are `magpie` and `pop bottle`) in the late training stage, we found two unique groups of images.
 In this work, we hypothesize that examples that a model has difficulty learning (images on the right) will exhibit higher variance in gradient updates over the course of training (. On the
 other hand, the gradient updates for the relatively easier examples are expected to stabilize early in training and converge to a narrow range of values.
+
+                                  Lowest VOG                               Highest VOG
 <p align="center">
     <img src="imagenet/018_late.jpg" width=700px>
 </p>
@@ -59,4 +61,4 @@ other hand, the gradient updates for the relatively easier examples are expected
 Note that the code in this repository is licensed under MIT License, but, the pre-trained condition models used by the code have their own licenses. Please carefully check them before use. 
 
 ## 5. Questions?
-If you have questions/suggestions, please feel free to [email](mailto:chiragagarwall12@gmail.com) or create github issues.     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+If you have questions/suggestions, please feel free to [email](mailto:chiragagarwall12@gmail.com) or create github issues.
