@@ -33,7 +33,7 @@ challenging examples (closest to the decision boundary)</i></p>
 ### ImageNet
 The main scripts for the ImageNet experiments are in the `./imagenet/` folder. 
 
-1. Before calculating the VOG scores you would need to store the gradients of the respective images in the `./scripts/train.txt/` file using model snapshots. For demonstration purpose, we have shared the model weights at snapshot `32000`. To store the gradients for the imagenet dataset (stored as <path>/imagenet_dir/train), we run the shell script [train_get_gradients.sh](train_get_gradients.sh) like:
+1. Before calculating the VOG scores you would need to store the gradients of the respective images in the `./scripts/train.txt/` file using model snapshots. For demonstration purpose, we have shared the model weights of the [late stage](https://drive.google.com/drive/folders/1_dY4H_dizvTGUkQFAQANfFRDc_82Bsli?usp=sharing), i.e. steps 30024, 31275, and 32000. To store the gradients for the imagenet dataset (stored as <path>/imagenet_dir/train), we run the shell script [train_get_gradients.sh](train_get_gradients.sh) like:
     
 `source train_get_gradients.sh 32000 ./imagenet/train_results/ 9 ./scripts/train.txt/`
 
