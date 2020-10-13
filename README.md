@@ -45,23 +45,18 @@ The main scripts for the ImageNet experiments are in the `./imagenet/` folder.
 </p>
 
 On analyzing the VOG score for a particular class (e.g. below are `magpie` and `pop bottle`) in the late training stage, we found two unique groups of images.
-In this work, we hypothesize that examples that a model has difficulty learning will exhibit higher variance in gradient updates over the course of training. On the
+In this work, we hypothesize that examples that a model has difficulty learning (images on the right) will exhibit higher variance in gradient updates over the course of training (. On the
 other hand, the gradient updates for the relatively easier examples are expected to stabilize early in training and converge to a narrow range of values.
 <p align="center">
-    <img src="imagenet/018_late.jpg" width=300px>
+    <img src="imagenet/018_late.jpg" width=700px>
 </p>
 <p align="center">
-    <img src="imagenet/737_late.jpg" width=300px>
+    <img src="imagenet/737_late.jpg" width=700px>
 </p>
 <p align="left"><i>Each 5×5 grid shows the top-25 ImageNet training-set images with the lowest and highest VOG scores for the class magpie and pop bottle with their predicted labels below the image. Training set images with higher VOG scores (b) tend to feature zoomed-in images with atypical color schemes and vantage points.</i></p>
-
-Also, a sample which is not learned by the model would result in high gradient variance even in the late training stage. The following figure shows the how the VOG score is always high across different training stages which means the gradients never stabilized.
-<p align="center">
-    <img src="imagenet/train_vog_sample_007.jpg" width=300px>
-</p>
 
 ## 4. Licenses
 Note that the code in this repository is licensed under MIT License, but, the pre-trained condition models used by the code have their own licenses. Please carefully check them before use. 
 
 ## 5. Questions?
-If you have questions/suggestions, please feel free to [email](mailto:chiragagarwall12@gmail.com) or create github issues.     
+If you have questions/suggestions, please feel free to [email](mailto:chiragagarwall12@gmail.com) or create github issues.     aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
