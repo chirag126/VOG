@@ -48,14 +48,13 @@ On analyzing the VOG score for a particular class (e.g. below are `magpie` and `
 In this work, we hypothesize that examples that a model has difficulty learning (images on the right) will exhibit higher variance in gradient updates over the course of training (. On the
 other hand, the gradient updates for the relatively easier examples are expected to stabilize early in training and converge to a narrow range of values.
 
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **Lowest VOG** &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; **Highest VOG**
 <p align="center">
     <img src="imagenet/018_late.jpg" width=700px>
 </p>
 <p align="center">
     <img src="imagenet/737_late.jpg" width=700px>
 </p>
-<p align="left"><i>Each 5×5 grid shows the top-25 ImageNet training-set images with the lowest and highest VOG scores for the class magpie and pop bottle with their predicted labels below the image. Training set images with higher VOG scores (b) tend to feature zoomed-in images with atypical color schemes and vantage points.</i></p>
+<p align="left"><i>Each 5×5 grid shows the top-25 ImageNet training-set images with the lowest (left column) and highest (right column) VOG scores for the class magpie and pop bottle with their predicted labels below the image. Training set images with higher VOG scores (b) tend to feature zoomed-in images with atypical color schemes and vantage points.</i></p>
 
 ## 4. Licenses
 Note that the code in this repository is licensed under MIT License, but, the pre-trained condition models used by the code have their own licenses. Please carefully check them before use. 
