@@ -14,7 +14,7 @@ This repository contains source code necessary to reproduce some of the main res
 ## 1. Setup
 
 ### Installing software
-This repository is built using a combination of TensorFlow and PyTorch. You can install the necessary libraries by pip installing the requirements text file `pip install -r ./requirements_tf.txt`
+This repository is built using a combination of TensorFlow and PyTorch. You can install the necessary libraries by pip installing the requirements text file `pip install -r ./requirements_tf.txt` and `pip install -r ./requirements_pytorch.txt`
 
 ## 2. Usage
 ### Toy experiment
