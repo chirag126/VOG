@@ -24,7 +24,7 @@ pickleshare==0.7.5
 Pillow @ file:///opt/concourse/worker/volumes/live/be1e8a56-c4be-4ffe-4fa7-5a0e9c460b1a/volume/pillow_1594307312933/work
 prompt-toolkit==3.0.7
 ptyprocess==0.6.0
-Pygments==2.6.1
+Pygments==2.7.4
 pyparsing==2.4.7
 python-dateutil==2.8.1
 PyWavelets==1.1.1
