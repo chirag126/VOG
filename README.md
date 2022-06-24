@@ -4,12 +4,13 @@ This repository contains source code necessary to reproduce some of the main res
 
 **If you use this software, please consider citing:**
     
-    @article{agarwal2020estimating, 
-    title={Estimating Example Difficulty using Variance of Gradients},
-    author={Agarwal, Chirag and Hooker, Sara},
-    journal={arXiv preprint arXiv:2008.11600},
-    year={2020}
-    }
+    @inproceedings{agarwal2022estimating,
+  title={Estimating example difficulty using variance of gradients},
+  author={Agarwal, Chirag and D'souza, Daniel and Hooker, Sara},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={10368--10378},
+  year={2022}
+}
     
 ## 1. Setup
 
